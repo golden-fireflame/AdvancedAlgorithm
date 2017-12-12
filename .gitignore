@@ -1,6 +1,6 @@
 # Shan's dump files
 .DS_Store
-
+HW10/.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -103,5 +103,3 @@ ENV/
 
 # mypy
 .mypy_cache/
-HW10/.DS_Store
-HW10/.DS_Store
