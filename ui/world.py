@@ -2,6 +2,9 @@ class World:
     rectangles = []
     lines = []
     circles = []
+    points = []
+    start = None
+    goal = None
 
     def __init__(self):
         pass
@@ -14,6 +17,15 @@ class World:
             self.lines.append(shape)
         elif isinstance(shape, Circle):
             self.lines.append(shape)
+        elif isinstance(shape, Point):
+            self.points.append(shape)
+            #print("point added")
+
+    def add_start(self, start):
+        self.start = Point(start[0], start[1])
+
+    def add_goal(self, goal):
+        self.goal = Point(goal[0], goal[1])
 
 
 class Shape:
@@ -23,6 +35,16 @@ class Shape:
 
     def draw(self):
         pass
+
+
+class Point(Shape):
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def draw(self, w):
+        w.create_rectangle(self.x, self.y, self.x + 1, self.y + 1, fill="yellow")
 
 
 class Line(Shape):

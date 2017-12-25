@@ -1,5 +1,6 @@
 from Tkinter import *
 
+from astar.algorithm import Astar
 from ui.world import *
 
 
@@ -61,7 +62,7 @@ class Map:
         frame = Frame(root, bg='grey', width=600, height=40)
         frame.pack(fill='x')
 
-        start_button = Button(frame, text='Start', width=40, command=self.add_circle_popup)
+        start_button = Button(frame, text='Start', width=40, command=self.start_alg)
         start_button.pack(side=LEFT, fill=BOTH)
 
         button1 = Button(frame, text='Add line', width=25, command=self.add_line_popup)
@@ -78,11 +79,18 @@ class Map:
         # invoke canvas
         self.c = Canvas(root, width=width, height=height, bg='white')
         self.c.pack()
+
         self.draw_shapes()
 
         root.mainloop()
 
     def draw_shapes(self):
+        print("drawing shapes")
+
+        self.world.start.draw(self.c)
+
+        self.world.goal.draw(self.c)
+
         for l in self.world.lines:
             l.draw(self.c)
 
@@ -90,6 +98,9 @@ class Map:
             c.draw(self.c)
 
         for r in self.world.rectangles:
+            r.draw(self.c)
+
+        for r in self.world.points:
             r.draw(self.c)
 
     def add_line_popup(self):
@@ -100,3 +111,18 @@ class Map:
 
     def add_circle_popup(self):
         PopUp(self, Circle.__name__)
+
+    def start_alg(self):
+        print("start invoked")
+        start = (self.world.start.x, self.world.start.y)
+        goal = (self.world.goal.x, self.world.goal.y)
+
+        alg = Astar(self, 500, 500, start, goal)
+        came_from, cost_so_far = alg.a_star(start, goal)
+
+        path = alg.build_path(goal, came_from, cost_so_far)
+
+        for p in path:
+            self.world.add_shape(Point(p[0], p[1]))
+
+        self.draw_shapes()
