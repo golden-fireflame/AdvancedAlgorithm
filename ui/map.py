@@ -84,9 +84,13 @@ class Map:
         self.c = Canvas(root, width=width, height=height, bg='white')
         
         self.c.pack()
-        image = ImageTk.PhotoImage(file = "1.png")
-        self.c.create_image(0, 0, image = image, anchor = NW)
-
+        image3 = ImageTk.PhotoImage(file = "1.png")
+        self.c.create_image(0,0, image = image3, anchor = NW)
+        image1 = ImageTk.PhotoImage(file = "4.png")
+        self.c.create_image(self.world.start.x-40, self.world.start.y-70, image = image1, anchor = NW)
+        image = ImageTk.PhotoImage(file = "3.png")
+        self.c.create_image(self.world.goal.x+15, self.world.goal.y+10, image = image, anchor = NW)
+     
         self.draw_shapes()
 
         root.mainloop()
