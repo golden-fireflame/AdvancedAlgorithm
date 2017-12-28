@@ -1,5 +1,5 @@
 from Tkinter import *
-
+from PIL import ImageTk
 from astar.algorithm import Astar
 from ui.world import *
 
@@ -59,7 +59,7 @@ class Map:
         root.title("A* pathfinding")
 
         # create frame to put control buttons onto
-        frame = Frame(root, bg='grey', width=600, height=40)
+        frame = Frame(root, bg='SpringGreen3', width=600, height=40)
         frame.pack(fill='x')
 
         start_button = Button(frame, text='Start', width=40, command=self.start_alg)
@@ -82,7 +82,10 @@ class Map:
         height = 600
         # invoke canvas
         self.c = Canvas(root, width=width, height=height, bg='white')
+        
         self.c.pack()
+        image = ImageTk.PhotoImage(file = "1.png")
+        self.c.create_image(0, 0, image = image, anchor = NW)
 
         self.draw_shapes()
 
