@@ -73,6 +73,10 @@ class Map:
 
         button3 = Button(frame, text='Add circle', width=25, command=self.add_circle_popup)
         button3.pack(side=TOP)
+						#button4 = Button(frame, text='Add start point', width=25, command=self.add_pointstart_popup)
+						#button4.pack(side=TOP)
+						#button5 = Button(frame, text='Add end point', width=25, command=self.add_pointend_popup)
+						#button5.pack(side=TOP)
         # set canvas properties
         width = 600
         height = 600
@@ -111,6 +115,7 @@ class Map:
 
     def add_circle_popup(self):
         PopUp(self, Circle.__name__)
+  
 
     def start_alg(self):
         print("start invoked")
@@ -123,6 +128,6 @@ class Map:
         path = alg.build_path(goal, came_from, cost_so_far)
 
         for p in path:
-            self.world.add_shape(Point(p[0], p[1]))
+            self.world.add_shape(Point(p[0], p[1],None))   # this None is used  just to colour start and end points in different colours. 
 
         self.draw_shapes()
