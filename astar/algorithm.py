@@ -43,17 +43,17 @@ class Astar:
         return path
 
 
-    def a_star(self, start, goal):
+    def a_star(self):
         closed_set = set()
         open_set = PriorityQueue()
 
         came_from = {}
         cost_so_far = {}
 
-        open_set.put(start, 0)
+        open_set.put(self.start, 0)
 
-        came_from[start] = None
-        cost_so_far[start] = 0
+        came_from[self.start] = None
+        cost_so_far[self.start] = 0
 
         i = 0
         while not open_set.empty():
@@ -66,7 +66,7 @@ class Astar:
                 #self.map.world.add_shape(Point(current[0], current[1]))
                 #self.map.draw_shapes()
 
-            if current == goal:
+            if current == self.goal:
                 break
 
             for neighbor in self.get_neighbors(current):
@@ -77,7 +77,7 @@ class Astar:
 
                 if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
                     cost_so_far[neighbor] = new_cost
-                    priority = new_cost + self.get_distance(goal, neighbor)
+                    priority = new_cost + self.get_distance(self.goal, neighbor)
                     open_set.put(neighbor, priority)
                     came_from[neighbor] = current
 

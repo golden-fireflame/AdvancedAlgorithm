@@ -130,7 +130,7 @@ class Map:
         goal = (self.world.goal.x, self.world.goal.y)
 
         alg = Astar(self, 500, 500, start, goal)
-        came_from, cost_so_far = alg.a_star(start, goal)
+        came_from, cost_so_far = alg.a_star()
 
         path = alg.build_path(goal, came_from, cost_so_far)
 

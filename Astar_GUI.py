@@ -7,8 +7,14 @@ import uuid
 import threading
 import time
 from time import sleep
+from ui.world import World
+from ui.world import Shape, Point, Line, Circle, Rectangle
+from astar.algorithm import Astar
 
 
+FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
+logging.basicConfig(level=logging.DEBUG, format=FORMAT)
+LOG = logging.getLogger()
 """---------------------------------------------------------------------------------------------------------------------
                                           GUI
 ---------------------------------------------------------------------------------------------------------------------"""
@@ -17,7 +23,7 @@ class GUI(Tk):
         Tk.__init__(self, *args, **kwargs)
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
         self.title('A star algorithm')
-        logging.debug('Client has started!')
+        LOG.debug('Application has started!')
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
@@ -25,9 +31,8 @@ class GUI(Tk):
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-        # store variables if needed
 
-        # store client UI frames
+        # store UI frames
         self.frames = {}
         for F in (Top, AddShape):
             page_name = F.__name__
@@ -64,7 +69,7 @@ class Top(Frame):
         self.map_frame = Frame(self)
         self.map_frame.grid(row=1, column=1)
         # some variables if needed
-
+        self.world = World()
         # head label
         label = Label(self.title_frame, text='A Star Path Finding Algorithm', font=controller.title_font)
         label.pack(fill='x')
@@ -128,9 +133,25 @@ class Top(Frame):
 
     def initMap(self):
         # demo
+        self.w.create_oval(750, 200, 760, 210, fill="black")
+        sPoint = Point(750, 200, 'start')
+        self.world.start = sPoint
+
+        self.w.create_oval(200, 750, 210, 760, fill="magenta")
+        ePoint = Point(200, 750, 'end')
+        self.world.goal = ePoint
+
         self.w.create_rectangle(200, 200, 400, 400, fill="blue")
+        rectangle = Rectangle(200, 200, 400, 400)
+        self.world.rectangles.append(rectangle)
+
         self.w.create_line(150, 750, 750, 400, fill="red")
+        line = Line(150, 750, 750, 400)
+        self.world.lines.append(line)
+
         self.w.create_oval(750, 750, 800, 800, fill="green")
+        circle = Circle(750, 750, 800, 800)
+        self.world.circles.append(circle)
         return
 
     def clearMap(self):
@@ -138,6 +159,16 @@ class Top(Frame):
         return
 
     def startAlgo(self):
+        LOG.debug('Start Path Finding...')
+        start = (self.world.start.x, self.world.start.y)
+        goal = (self.world.goal.x, self.world.goal.y)
+
+        alg = Astar(self, 800, 800, start, goal)
+        came_from, cost_so_far = alg.a_star()
+        path = alg.build_path(goal, came_from, cost_so_far)
+
+        for p in path:
+            self.w.create_oval(p[0], p[1], p[0]+10, p[1]+10, fill='cyan')
         return
 
 
@@ -148,6 +179,7 @@ class AddShape(Frame):
         # self.pack(side="top", fill="both", expand=True)
         self.controller = controller
         # shape & coordinates
+        self.frame = None
         self.shape = None
         self.x1 = None
         self.y1 = None
@@ -181,8 +213,8 @@ class AddShape(Frame):
         self.back_button.grid(row=4, column=1)
 
     def drawshape(self, e=None):
-        frame = self.controller.get_frame('Top')
-        w = frame.w
+        self.frame = self.controller.get_frame('Top')
+        w = self.frame.w
         try:
             if self.shape == 'sPoint' or self.shape == 'ePoint':
                 self.x1 = int(self.entry_x1.get())
@@ -209,15 +241,33 @@ class AddShape(Frame):
         tkMessageBox.showinfo('Success', 'Shape added!')
         self.controller.show_frame('Top')
         # sync map with world
-        pass
+        self.add2world(self.shape)
         return
 
-    def add2world(self):
+    def add2world(self, shape):
+        # get world
+        world = self.frame.world
+        if self.shape == 'sPoint':
+            sPoint = Point(self.x1, self.y1, 'start')
+            world.start = sPoint
+        elif self.shape == 'ePoint':
+            ePoint = Point(self.x1, self.y1, 'end')
+            world.goal = ePoint
+        elif self.shape == 'Line':
+            line = Line(self.x1, self.y1, self.x2, self.y2)
+            world.lines.append(line)
+        elif self.shape == 'Circle':
+            circle = Circle(self.x1, self.y1, self.x2, self.y2)
+            world.circles.append(circle)
+        elif self.shape == 'Rectangle':
+            rectangle = Rectangle(self.x1, self.y1, self.x2, self.y2)
+            world.rectangles.append(rectangle)
         return
 
     def prepare(self, shape):
         self.clearEntry()
         self.entry_x1.focus()
+
         self.shape = shape
         if shape == 'sPoint' or self.shape == 'ePoint':
             self.label_x2.grid_remove()
@@ -254,4 +304,4 @@ if __name__ == '__main__':
     try:
         app.mainloop()
     except KeyboardInterrupt:
-        logging.warn('User terminated client!')
+        LOG.warn('User terminated client!')
