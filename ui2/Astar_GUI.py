@@ -71,6 +71,8 @@ class Top(Frame):
 
         # config panel
         self.execute_button = Button(self.config_frame, text='Play', command=self.startAlgo)
+        self.clear_button = Button(self.config_frame, text='Clear', command=self.clearMap)
+        self.init_button = Button(self.config_frame, text='Default Map', command=self.initMap)
         self.setStart_button = Button(self.config_frame, text='Start Point', command=self.setStartPoint)
         self.setEnd_button = Button(self.config_frame, text='End Point', command=self.setEndPoint)
         self.addLine_button = Button(self.config_frame, text='Add Line', command=self.addLine)
@@ -78,11 +80,13 @@ class Top(Frame):
         self.addCircle_button = Button(self.config_frame, text='Add Circle', command=self.addCircle)
 
         self.execute_button.grid(row=0, column=0, columnspan=2, sticky=NSEW)
-        self.setStart_button.grid(row=1, column=0)
-        self.setEnd_button.grid(row=1, column=1)
-        self.addLine_button.grid(row=2, column=0, columnspan=2, sticky=NSEW)
-        self.addRect_button.grid(row=3, column=0, columnspan=2, sticky=NSEW)
-        self.addCircle_button.grid(row=4, column=0, columnspan=2, sticky=NSEW)
+        self.clear_button.grid(row=1, column=0, sticky=NSEW)
+        self.init_button.grid(row=1, column=1, sticky=NSEW)
+        self.setStart_button.grid(row=2, column=0)
+        self.setEnd_button.grid(row=2, column=1)
+        self.addLine_button.grid(row=3, column=0, columnspan=2, sticky=NSEW)
+        self.addRect_button.grid(row=4, column=0, columnspan=2, sticky=NSEW)
+        self.addCircle_button.grid(row=5, column=0, columnspan=2, sticky=NSEW)
 
         # canvas
         self.w = Canvas(self.map_frame, width=1000, height=1000, bg='white')
@@ -94,13 +98,13 @@ class Top(Frame):
 
     def setStartPoint(self):
         frame = self.controller.get_frame('AddShape')
-        frame.prepare('Point')
+        frame.prepare('sPoint')
         self.controller.show_frame('AddShape')
         return
 
     def setEndPoint(self):
         frame = self.controller.get_frame('AddShape')
-        frame.prepare('Point')
+        frame.prepare('ePoint')
         self.controller.show_frame('AddShape')
         return
 
@@ -129,6 +133,10 @@ class Top(Frame):
         self.w.create_oval(750, 750, 800, 800, fill="green")
         return
 
+    def clearMap(self):
+        self.w.delete(ALL)
+        return
+
     def startAlgo(self):
         return
 
@@ -139,13 +147,13 @@ class AddShape(Frame):
         Frame.__init__(self, master)
         # self.pack(side="top", fill="both", expand=True)
         self.controller = controller
-
+        # shape & coordinates
         self.shape = None
         self.x1 = None
         self.y1 = None
         self.x2 = None
         self.y2 = None
-
+        # Labels & Entries
         self.label_x1 = Label(self, text='X1')
         self.label_y1 = Label(self, text='Y1')
         self.label_x2 = Label(self, text='X2')
@@ -165,39 +173,76 @@ class AddShape(Frame):
         self.entry_y1.grid(row=1, column=1)
         self.entry_x2.grid(row=2, column=1)
         self.entry_y2.grid(row=3, column=1)
-
+        # Buttons
         self.submit_button = Button(self, text='Submit', command=self.drawshape)
         self.back_button = Button(self, text='Back', command=self.goBack)
 
         self.submit_button.grid(row=4, column=0)
         self.back_button.grid(row=4, column=1)
 
-    def drawshape(self):
+    def drawshape(self, e=None):
+        frame = self.controller.get_frame('Top')
+        w = frame.w
+        try:
+            if self.shape == 'sPoint' or self.shape == 'ePoint':
+                self.x1 = int(self.entry_x1.get())
+                self.y1 = int(self.entry_y1.get())
+            else:
+                self.x1 = int(self.entry_x1.get())
+                self.y1 = int(self.entry_y1.get())
+                self.x2 = int(self.entry_x2.get())
+                self.y2 = int(self.entry_y2.get())
+        except ValueError as e:
+            tkMessageBox.showwarning('Input Error', 'Please input a number!')
+            return
+
+        if self.shape == 'sPoint':
+            w.create_oval(self.x1, self.y1, self.x1+10, self.y1+10, fill="black")
+        elif self.shape == 'ePoint':
+            w.create_oval(self.x1, self.y1, self.x1 + 10, self.y1 + 10, fill="magenta")
+        elif self.shape == 'Line':
+            w.create_line(self.x1, self.y1, self.x2, self.y2, fill="red")
+        elif self.shape == 'Circle':
+            w.create_oval(self.x1, self.y1, self.x2, self.y2, fill="green")
+        elif self.shape == 'Rectangle':
+            w.create_rectangle(self.x1, self.y1, self.x2, self.y2, fill="blue")
+        tkMessageBox.showinfo('Success', 'Shape added!')
+        self.controller.show_frame('Top')
+        # sync map with world
+        pass
         return
 
     def add2world(self):
         return
 
     def prepare(self, shape):
+        self.clearEntry()
+        self.entry_x1.focus()
         self.shape = shape
-        if shape == 'Point':
+        if shape == 'sPoint' or self.shape == 'ePoint':
             self.label_x2.grid_remove()
             self.label_y2.grid_remove()
             self.entry_x2.grid_remove()
             self.entry_y2.grid_remove()
+            self.entry_y1.bind('<Return>', self.drawshape)
         else:
             self.label_x2.grid()
             self.label_y2.grid()
             self.entry_x2.grid()
             self.entry_y2.grid()
+            self.entry_y2.bind('<Return>', self.drawshape)
         return
 
     def goBack(self):
+        self.clearEntry()
+        self.controller.show_frame('Top')
+        return
+
+    def clearEntry(self):
         self.entry_x1.delete(0, 'end')
         self.entry_y1.delete(0, 'end')
         self.entry_x2.delete(0, 'end')
         self.entry_y2.delete(0, 'end')
-        self.controller.show_frame('Top')
         return
 
 
