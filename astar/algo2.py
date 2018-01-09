@@ -1,7 +1,20 @@
+import heapq
 from Queue import PriorityQueue
+from heapq import *
+from math import sqrt
 import time
 
 from ui.world import Point
+
+class MyPriorityQueue(PriorityQueue):
+    def _put(self, item):
+        return super._put((self._get_priority(item), item))
+
+    def _get(self):
+        return super._get()[1]
+
+    def _get_priority(self, item):
+        return item[1]
 
 
 class Astar:
@@ -14,30 +27,30 @@ class Astar:
 
 
     def get_neighbors(self, node):
-        coords = [(0, 1), (0, -1), (1, 0), (-1, 0),
+        coords2 = [(0, 1), (0, -1), (1, 0), (-1, 0),
                   (-1, -1), (1, 1), (-1, 1), (1, -1)]
-        coords2 = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        #coords2 = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         neighbors = []
 
         for item in coords2:
             x = node[0] + item[0]
             y = node[1] + item[1]
-            if x > 0 and x < self.x and y > 0 and y < self.y:
-                neighbors.append((x, y))
+
+            if self.map.world.is_allowed(x, y):
+                if 0 < x < self.x and 0 < y < self.y:
+                    neighbors.append((x, y))
 
         return neighbors
 
 
     def get_distance(self, from_node, to_node):
-        return (from_node[0] - to_node[0]) ** 2 + (from_node[1] - to_node[1]) ** 2
+        return sqrt((from_node[0] - to_node[0]) ** 2 + (from_node[1] - to_node[1]) ** 2)
 
     def build_path(self, goal, came_from, cost_so_far):
         current = goal
         path = []
 
         while current in came_from:
-            print(current)
-            print(cost_so_far[current])
             path.append(current)
             current = came_from[current]
 
@@ -51,13 +64,13 @@ class Astar:
         came_from = {}
         cost_so_far = {}
 
-        open_set.put(self.start, 0)
+        open_set.put((0, self.start))
 
         came_from[self.start] = None
         cost_so_far[self.start] = 0
         i = 0
         while not open_set.empty():
-            current = open_set.get()
+            current = open_set.get()[1]
             closed_set.add(current)
 
             i += 1
@@ -77,8 +90,10 @@ class Astar:
 
                 if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
                     cost_so_far[neighbor] = new_cost
-                    priority = new_cost + self.get_distance(self.goal, neighbor)
-                    open_set.put(neighbor, priority)
+                    heuristic_cost = self.get_distance(self.goal, neighbor)
+
+                    priority = new_cost + heuristic_cost
+                    open_set.put((priority, neighbor))
                     came_from[neighbor] = current
 
         return came_from, cost_so_far

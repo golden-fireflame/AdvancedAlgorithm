@@ -1,3 +1,5 @@
+from math import sqrt
+
 class World:
     rectangles = []
     lines = []
@@ -27,6 +29,12 @@ class World:
     def add_goal(self, goal):
         self.goal = Point(goal[0], goal[1],"end")
 
+    def is_allowed(self, x, y):
+        for line in self.lines:
+            if line.is_within(x, y):
+                return False
+        return True
+
 
 class Shape:
 
@@ -36,6 +44,8 @@ class Shape:
     def draw(self):
         pass
 
+    def distance(self, x1, x2, y1, y2):
+        return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
 class Point(Shape):
 
@@ -61,6 +71,13 @@ class Line(Shape):
 
     def draw(self, w):
         w.create_line(self.x, self.y, self.x2, self.y2, fill="blue")
+
+    def is_within(self, xPoint, yPoint):
+        return abs(
+            self.distance(xPoint, self.x, yPoint, self.y) +
+            self.distance(xPoint, self.x2, yPoint, self.y2) -
+            self.distance(self.x, self.x2, self.y, self.y2)
+        ) < 0.2;
 
 
 class Circle(Shape):
