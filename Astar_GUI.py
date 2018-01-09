@@ -148,12 +148,20 @@ class Top(Frame):
         rectangle = Rectangle(200, 200, 400, 400)
         self.world.rectangles.append(rectangle)
 
-        self.w.create_rectangle(150, 600, 750, 610, fill="blue")
+        self.w.create_rectangle(150, 600, 750, 610, fill="red")
         rectangle = Rectangle(150, 600, 750, 610)
         self.world.rectangles.append(rectangle)
 
-        self.w.create_oval(750, 750, 800, 800, fill="green")
-        circle = Circle(750, 750, 800, 800)
+        self.w.create_rectangle(400, 400, 700, 410, fill="red")
+        rectangle = Rectangle(400, 400, 700, 410)
+        self.world.rectangles.append(rectangle)
+
+        #self.w.create_rectangle(300, 420, 700, 440, fill="red")
+        #rectangle = Rectangle(300, 420, 700, 440)
+        #self.world.rectangles.append(rectangle)
+
+        self.w.create_oval(750, 400, 800, 450, fill="green")
+        circle = Circle(750, 400, 800, 450)
         self.world.circles.append(circle)
         return
 

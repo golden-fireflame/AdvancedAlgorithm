@@ -30,6 +30,9 @@ class World:
         self.goal = Point(goal[0], goal[1],"end")
 
     def is_allowed(self, x, y):
+        for circle in self.circles:
+            if circle.is_within(x, y):
+                return False
         for rectangle in self.rectangles:
             if rectangle.is_within(x, y):
                 return False
@@ -83,16 +86,21 @@ class Line(Shape):
 
 class Circle(Shape):
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, x2, y2):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+        self.x2 = x2
+        self.y2 = y2
+
+        self.x_center = (x + x2) / 2
+        self.y_center = (y + y2) / 2
+        self.radius = self.x_center - x
 
     def draw(self, w):
-        w.create_oval(self.x, self.y, self.width, self.height, fill="green")
+        w.create_oval(self.x, self.y, self.x2, self.y2, fill="green")
 
-
+    def is_within(self, x_point, y_point):
+        return self.distance(x_point, y_point, self.x_center, self.y_center) <= self.radius
 
 class Rectangle(Shape):
 
@@ -106,4 +114,4 @@ class Rectangle(Shape):
         w.create_rectangle(self.x, self.y, self.x2, self.y2, fill="red")
 
     def is_within(self, x_point, y_point):
-        return self.x <= x_point <= self.x2 and self.y <= y_point <= self.y2;
+        return self.x <= x_point <= self.x2 and self.y <= y_point <= self.y2
