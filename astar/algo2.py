@@ -75,9 +75,12 @@ class Astar:
 
             i += 1
             #later refcator this to some drawing method
-            #if i % 1000 == 0:
-                #self.map.world.add_shape(Point(current[0], current[1]))
-                #self.map.draw_shapes()
+            if i % 1000 == 0:
+                """uncomment if want to plot both sets"""
+                # for node in open_set.queue:
+                #     self.map.visualize_process(node[1], 'open')
+                for node in closed_set:
+                    self.map.visualize_process(node, 'closed')
 
             if current == self.goal:
                 break

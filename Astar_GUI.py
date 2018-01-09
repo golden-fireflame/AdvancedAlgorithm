@@ -11,6 +11,7 @@ from ui.world import World
 from ui.world import Shape, Point, Line, Circle, Rectangle
 #from astar.algorithm import Astar
 from astar.algo2 import Astar
+from threading import Thread
 
 
 FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
@@ -97,7 +98,7 @@ class Top(Frame):
         self.addCircle_button.grid(row=5, column=0, columnspan=2, sticky=NSEW)
 
         # canvas
-        self.w = Canvas(self.map_frame, width=1000, height=1000, bg='white')
+        self.w = Canvas(self.map_frame, width=1000, height=1000, bg='white', bd=0, highlightthickness=0, relief='ridge')
         self.w.pack()
         self.initMap()
 
@@ -136,11 +137,11 @@ class Top(Frame):
 
     def initMap(self):
         # demo
-        self.s = self.w.create_oval(750, 200, 760, 210, fill="black")
+        self.s = self.w.create_oval(750-5, 200-5, 760, 210, fill="black")
         sPoint = Point(750, 200, 'start')
         self.world.start = sPoint
 
-        self.e = self.w.create_oval(200, 750, 210, 760, fill="magenta")
+        self.e = self.w.create_oval(200-5, 750-5, 210, 760, fill="magenta")
         ePoint = Point(200, 750, 'end')
         self.world.goal = ePoint
 
@@ -171,6 +172,12 @@ class Top(Frame):
 
     def startAlgo(self):
         LOG.debug('Start Path Finding...')
+        # put algorithm into a independent thread, so that can visualize the process
+        t = Thread(target=self.Algo)
+        t.start()
+        return
+
+    def Algo(self):
         start = (self.world.start.x, self.world.start.y)
         goal = (self.world.goal.x, self.world.goal.y)
 
@@ -178,9 +185,17 @@ class Top(Frame):
         came_from, cost_so_far = alg.a_star()
         path = alg.build_path(goal, came_from, cost_so_far)
 
+        # to draw the final path
         for p in path:
-            self.w.create_rectangle(p[0], p[1], p[0]+1, p[1]+1, fill='cyan')
+            self.w.create_rectangle(p[0], p[1], p[0] + 1, p[1] + 1, fill='cyan')
         return
+
+    def visualize_process(self, node, flag):
+        # draw the explored area
+        if flag == 'open':
+            self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='cyan', outline="")
+        else:
+            self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='yellow', outline="")
 
 
 class AddShape(Frame):
@@ -270,7 +285,7 @@ class AddShape(Frame):
             line = Line(self.x1, self.y1, self.x2, self.y2)
             world.lines.append(line)
         elif self.shape == 'Circle':
-            circle = Circle(self.x1, self.y1, self.x2, self.y2)
+            circle = Circle(self.x1-5, self.y1-5, self.x2, self.y2)
             world.circles.append(circle)
         elif self.shape == 'Rectangle':
             rectangle = Rectangle(self.x1, self.y1, self.x2, self.y2)
