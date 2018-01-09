@@ -9,7 +9,8 @@ import time
 from time import sleep
 from ui.world import World
 from ui.world import Shape, Point, Line, Circle, Rectangle
-from astar.algorithm import Astar
+#from astar.algorithm import Astar
+from astar.algo2 import Astar
 
 
 FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
@@ -70,6 +71,8 @@ class Top(Frame):
         self.map_frame.grid(row=1, column=1)
         # some variables if needed
         self.world = World()
+        self.s = None
+        self.e = None
         # head label
         label = Label(self.title_frame, text='A Star Path Finding Algorithm', font=controller.title_font)
         label.pack(fill='x')
@@ -133,11 +136,11 @@ class Top(Frame):
 
     def initMap(self):
         # demo
-        self.w.create_oval(750, 200, 760, 210, fill="black")
+        self.s = self.w.create_oval(750, 200, 760, 210, fill="black")
         sPoint = Point(750, 200, 'start')
         self.world.start = sPoint
 
-        self.w.create_oval(200, 750, 210, 760, fill="magenta")
+        self.e = self.w.create_oval(200, 750, 210, 760, fill="magenta")
         ePoint = Point(200, 750, 'end')
         self.world.goal = ePoint
 
@@ -163,7 +166,7 @@ class Top(Frame):
         start = (self.world.start.x, self.world.start.y)
         goal = (self.world.goal.x, self.world.goal.y)
 
-        alg = Astar(self, 800, 800, start, goal)
+        alg = Astar(self, 1000, 1000, start, goal)
         came_from, cost_so_far = alg.a_star()
         path = alg.build_path(goal, came_from, cost_so_far)
 
@@ -229,9 +232,11 @@ class AddShape(Frame):
             return
 
         if self.shape == 'sPoint':
-            w.create_oval(self.x1, self.y1, self.x1+10, self.y1+10, fill="black")
+            w.delete(self.frame.s)
+            self.frame.s = w.create_oval(self.x1, self.y1, self.x1+10, self.y1+10, fill="black")
         elif self.shape == 'ePoint':
-            w.create_oval(self.x1, self.y1, self.x1 + 10, self.y1 + 10, fill="magenta")
+            w.delete(self.frame.e)
+            self.frame.e = w.create_oval(self.x1, self.y1, self.x1 + 10, self.y1 + 10, fill="magenta")
         elif self.shape == 'Line':
             w.create_line(self.x1, self.y1, self.x2, self.y2, fill="red")
         elif self.shape == 'Circle':
