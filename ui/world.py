@@ -30,8 +30,8 @@ class World:
         self.goal = Point(goal[0], goal[1],"end")
 
     def is_allowed(self, x, y):
-        for line in self.lines:
-            if line.is_within(x, y):
+        for rectangle in self.rectangles:
+            if rectangle.is_within(x, y):
                 return False
         return True
 
@@ -44,7 +44,8 @@ class Shape:
     def draw(self):
         pass
 
-    def distance(self, x1, x2, y1, y2):
+    @staticmethod
+    def distance(x1, x2, y1, y2):
         return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
 class Point(Shape):
@@ -72,12 +73,12 @@ class Line(Shape):
     def draw(self, w):
         w.create_line(self.x, self.y, self.x2, self.y2, fill="blue")
 
-    def is_within(self, xPoint, yPoint):
-        return abs(
-            self.distance(xPoint, self.x, yPoint, self.y) +
-            self.distance(xPoint, self.x2, yPoint, self.y2) -
-            self.distance(self.x, self.x2, self.y, self.y2)
-        ) < 0.2;
+    #def is_within(self, x_point, y_point):
+    #    return abs(
+    #        self.distance(x_point, self.x, y_point, self.y) +
+    #        self.distance(x_point, self.x2, y_point, self.y2) -
+    #        self.distance(self.x, self.x2, self.y, self.y2)
+    #    ) < 0.2;
 
 
 class Circle(Shape):
@@ -92,6 +93,7 @@ class Circle(Shape):
         w.create_oval(self.x, self.y, self.width, self.height, fill="green")
 
 
+
 class Rectangle(Shape):
 
     def __init__(self, x, y, x2, y2):
@@ -102,3 +104,6 @@ class Rectangle(Shape):
 
     def draw(self, w):
         w.create_rectangle(self.x, self.y, self.x2, self.y2, fill="red")
+
+    def is_within(self, x_point, y_point):
+        return self.x <= x_point <= self.x2 and self.y <= y_point <= self.y2;

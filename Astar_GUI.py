@@ -148,9 +148,9 @@ class Top(Frame):
         rectangle = Rectangle(200, 200, 400, 400)
         self.world.rectangles.append(rectangle)
 
-        self.w.create_line(150, 600, 750, 600, fill="red")
-        line = Line(150, 600, 750, 600)
-        self.world.lines.append(line)
+        self.w.create_rectangle(150, 600, 750, 610, fill="blue")
+        rectangle = Rectangle(150, 600, 750, 610)
+        self.world.rectangles.append(rectangle)
 
         self.w.create_oval(750, 750, 800, 800, fill="green")
         circle = Circle(750, 750, 800, 800)
