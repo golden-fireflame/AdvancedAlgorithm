@@ -160,8 +160,8 @@ class Top(Frame):
         #rectangle = Rectangle(300, 420, 700, 440)
         #self.world.rectangles.append(rectangle)
 
-        self.w.create_oval(750, 400, 800, 450, fill="green")
-        circle = Circle(750, 400, 800, 450)
+        self.w.create_oval(720, 400, 770, 450, fill="green")
+        circle = Circle(720, 400, 770, 450)
         self.world.circles.append(circle)
         return
 
@@ -179,7 +179,7 @@ class Top(Frame):
         path = alg.build_path(goal, came_from, cost_so_far)
 
         for p in path:
-            self.w.create_oval(p[0], p[1], p[0]+10, p[1]+10, fill='cyan')
+            self.w.create_rectangle(p[0], p[1], p[0]+1, p[1]+1, fill='cyan')
         return
 
 
