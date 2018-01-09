@@ -90,8 +90,8 @@ class Top(Frame):
         self.execute_button.grid(row=0, column=0, columnspan=2, sticky=NSEW)
         self.clear_button.grid(row=1, column=0, sticky=NSEW)
         self.init_button.grid(row=1, column=1, sticky=NSEW)
-        self.setStart_button.grid(row=2, column=0)
-        self.setEnd_button.grid(row=2, column=1)
+        self.setStart_button.grid(row=2, column=0, sticky=NSEW)
+        self.setEnd_button.grid(row=2, column=1, sticky=NSEW)
         self.addLine_button.grid(row=3, column=0, columnspan=2, sticky=NSEW)
         self.addRect_button.grid(row=4, column=0, columnspan=2, sticky=NSEW)
         self.addCircle_button.grid(row=5, column=0, columnspan=2, sticky=NSEW)
@@ -136,11 +136,11 @@ class Top(Frame):
 
     def initMap(self):
         # demo
-        self.s = self.w.create_oval(750, 200, 760, 210, fill="black")
+        self.s = self.w.create_oval(745, 195, 760, 210, fill="black")
         sPoint = Point(750, 200, 'start')
         self.world.start = sPoint
 
-        self.e = self.w.create_oval(200, 750, 210, 760, fill="magenta")
+        self.e = self.w.create_oval(195, 745, 210, 760, fill="magenta")
         ePoint = Point(200, 750, 'end')
         self.world.goal = ePoint
 
@@ -148,7 +148,7 @@ class Top(Frame):
         rectangle = Rectangle(200, 200, 400, 400)
         self.world.rectangles.append(rectangle)
 
-        self.w.create_rectangle(150, 600, 750, 610, fill="blue")
+        self.w.create_rectangle(150, 600, 750, 603, fill="red")
         rectangle = Rectangle(150, 600, 750, 610)
         self.world.rectangles.append(rectangle)
 
@@ -171,7 +171,7 @@ class Top(Frame):
         path = alg.build_path(goal, came_from, cost_so_far)
 
         for p in path:
-            self.w.create_oval(p[0], p[1], p[0]+10, p[1]+10, fill='cyan')
+            self.w.create_oval(p[0], p[1], p[0], p[1], fill='black')
         return
 
 
@@ -215,6 +215,12 @@ class AddShape(Frame):
         self.submit_button.grid(row=4, column=0)
         self.back_button.grid(row=4, column=1)
 
+        # help text
+        self.helptext = StringVar()
+        self.helptext.set('')
+        self.help_label = Label(self, textvariable=self.helptext)
+        self.help_label.grid(row=5, column=0, columnspan=2)
+
     def drawshape(self, e=None):
         self.frame = self.controller.get_frame('Top')
         w = self.frame.w
@@ -233,12 +239,12 @@ class AddShape(Frame):
 
         if self.shape == 'sPoint':
             w.delete(self.frame.s)
-            self.frame.s = w.create_oval(self.x1, self.y1, self.x1+10, self.y1+10, fill="black")
+            self.frame.s = w.create_oval(self.x1-5, self.y1-5, self.x1+10, self.y1+10, fill="black")
         elif self.shape == 'ePoint':
             w.delete(self.frame.e)
-            self.frame.e = w.create_oval(self.x1, self.y1, self.x1 + 10, self.y1 + 10, fill="magenta")
+            self.frame.e = w.create_oval(self.x1-5, self.y1-5, self.x1 + 10, self.y1 + 10, fill="magenta")
         elif self.shape == 'Line':
-            w.create_line(self.x1, self.y1, self.x2, self.y2, fill="red")
+            w.create_rectangle(self.x1, self.y1, self.x2, self.y2+3, fill="red")
         elif self.shape == 'Circle':
             w.create_oval(self.x1, self.y1, self.x2, self.y2, fill="green")
         elif self.shape == 'Rectangle':

@@ -106,4 +106,4 @@ class Rectangle(Shape):
         w.create_rectangle(self.x, self.y, self.x2, self.y2, fill="red")
 
     def is_within(self, x_point, y_point):
-        return self.x <= x_point <= self.x2 and self.y <= y_point <= self.y2;
+        return self.x <= x_point <= self.x2 and self.y <= y_point <= self.y2
