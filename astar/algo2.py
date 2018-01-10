@@ -59,8 +59,9 @@ class Astar:
 
     def a_star(self):
         closed_set = set()
+        closed_set_copy = []  # for plotting process, only new nodes will be plotted to make it faster
         open_set = PriorityQueue()
-
+        open_set_copy = []  # for plotting process, the same as above
         came_from = {}
         cost_so_far = {}
 
@@ -72,15 +73,18 @@ class Astar:
         while not open_set.empty():
             current = open_set.get()[1]
             closed_set.add(current)
+            closed_set_copy.append(current)
 
             i += 1
             #later refcator this to some drawing method
             if i % 50000 == 0:
                 """uncomment if want to plot both sets"""
-                # for node in open_set.queue:
-                #     self.map.visualize_process(node[1], 'open')
-                for node in closed_set:
+                for node in open_set_copy:
+                    self.map.visualize_process(node, 'open')
+                for node in closed_set_copy:
                     self.map.visualize_process(node, 'closed')
+                closed_set_copy = []
+                open_set_copy = []
 
             if current == self.goal:
                 break
@@ -97,6 +101,7 @@ class Astar:
 
                     priority = new_cost + heuristic_cost
                     open_set.put((priority, neighbor))
+                    open_set_copy.append(neighbor)
                     came_from[neighbor] = current
 
         return came_from, cost_so_far

@@ -197,9 +197,9 @@ class Top(Frame):
     def visualize_process(self, node, flag):
         # draw the explored area
         if flag == 'open':
-            self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='cyan', outline="")
+            self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='cyan', outline='cyan')
         else:
-            self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='yellow', outline="")
+            self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='yellow', outline='yellow')
 
 
 class AddShape(Frame):
