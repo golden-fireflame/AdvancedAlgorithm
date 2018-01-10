@@ -156,18 +156,22 @@ class Top(Frame):
         self.w.create_rectangle(150, 150, 300, 300, fill="blue")
         rectangle = Rectangle(150, 150, 300, 300)
         self.world.rectangles.append(rectangle)
+        self.world.update_map(rectangle, 'Obstacle')
 
         self.w.create_rectangle(100, 400, 550, 410, fill="red")
         rectangle = Rectangle(100, 400, 550, 410)
         self.world.rectangles.append(rectangle)
+        self.world.update_map(rectangle, 'Obstacle')
 
         self.w.create_rectangle(300, 300, 400, 310, fill="red")
         rectangle = Rectangle(300, 300, 400, 310)
         self.world.rectangles.append(rectangle)
+        self.world.update_map(rectangle, 'Obstacle')
 
         self.w.create_oval(420, 300, 470, 350, fill="green")
         circle = Circle(420, 300, 470, 350)
         self.world.circles.append(circle)
+        self.world.update_map(circle, 'Obstacle')
         return
 
     def clearMap(self):
@@ -284,10 +288,10 @@ class AddShape(Frame):
         tkMessageBox.showinfo('Success', 'Shape added!')
         self.controller.show_frame('Top')
         # sync map with world
-        self.add2world(self.shape)
+        self.add2world()
         return
 
-    def add2world(self, shape):
+    def add2world(self):
         # get world
         world = self.frame.world
         if self.shape == 'sPoint':
@@ -296,15 +300,19 @@ class AddShape(Frame):
         elif self.shape == 'ePoint':
             ePoint = Point(self.x1, self.y1, 'end')
             world.goal = ePoint
-        elif self.shape == 'Line':
+        elif self.shape == 'Line':  # not use any more
             line = Line(self.x1, self.y1, self.x2, self.y2)
             world.lines.append(line)
         elif self.shape == 'Circle':
+            area = self.area.get()
             circle = Circle(self.x1-5, self.y1-5, self.x2, self.y2)
             world.circles.append(circle)
+            world.update_map(circle, area)
         elif self.shape == 'Rectangle':
+            area = self.area.get()
             rectangle = Rectangle(self.x1, self.y1, self.x2, self.y2)
             world.rectangles.append(rectangle)
+            world.update_map(rectangle, area)
         return
 
     def prepare(self, shape):
@@ -318,12 +326,16 @@ class AddShape(Frame):
             self.entry_x2.grid_remove()
             self.entry_y2.grid_remove()
             self.entry_y1.bind('<Return>', self.drawshape)
+            self.area_label.grid_remove()
+            self.area_option.grid_remove()
         else:
             self.label_x2.grid()
             self.label_y2.grid()
             self.entry_x2.grid()
             self.entry_y2.grid()
             self.entry_y2.bind('<Return>', self.drawshape)
+            self.area_label.grid()
+            self.area_option.grid()
         return
 
     def goBack(self):

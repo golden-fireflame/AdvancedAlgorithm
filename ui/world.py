@@ -1,5 +1,6 @@
 from math import sqrt
 
+
 class World:
     def __init__(self):
         self.rectangles = []
@@ -8,11 +9,16 @@ class World:
         self.points = []
         self.start = None
         self.goal = None
-        # create map   0->blocked 1->sea 2->swamp
-        # all coordinates set 0
+        # create map:   0->accessible(False)  1->blocked 2->sea 3->swamp(True)
+        self.map = {}
+        for i in range(600):
+            for j in range(600):
+                self.map[(i, j)] = 0  # all coordinates set 0
 
-    def update_map(self, shape, type):
-        # function called to update map
+    def update_map(self, shape, area):
+        # function called to update map, area->text
+        # shape = Shape(), area = 'Obstacle'
+
         return
 
     def add_shape(self, shape):
