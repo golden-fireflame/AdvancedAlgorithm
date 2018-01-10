@@ -95,6 +95,17 @@ class Top(Frame):
         self.addRect_button.grid(row=0, column=3, sticky=NSEW)
         self.addCircle_button.grid(row=1, column=3, sticky=NSEW)
 
+        # config panel for drag&draw
+        self.area_label = Label(self.config_frame, text='Drag & Draw')
+        self.obstacle_button = Button(self.config_frame, text='Obstacle', command=self.area_obstacle)
+        self.sea_button = Button(self.config_frame, text='Sea', command=self.area_sea)
+        self.swamp_button = Button(self.config_frame, text='Swamp', command=self.area_swamp)
+
+        self.area_label.grid(row=0, column=4)
+        self.obstacle_button.grid(row=1, column=4, sticky=NSEW)
+        self.sea_button.grid(row=1, column=5, sticky=NSEW)
+        self.swamp_button.grid(row=1, column=6, sticky=NSEW)
+
         # canvas
         self.w = Canvas(self.map_frame, width=600, height=600, bg='white', bd=0, highlightthickness=0, relief='ridge')
         self.w.pack()
@@ -103,9 +114,12 @@ class Top(Frame):
         # bind key to start algo
         self.execute_button.bind('<Return>', self.startAlgo)
         # bind key for create rectangle
+        self.area = None
         self.rect = None
         self.start_x = None
         self.start_y = None
+        self.curX = None
+        self.curY = None
         self.w.bind("<ButtonPress-1>", self.on_button_press)
         self.w.bind("<B1-Motion>", self.on_move_press)
         self.w.bind("<ButtonRelease-1>", self.on_button_release)
@@ -216,25 +230,72 @@ class Top(Frame):
             self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='yellow', outline='yellow')
 
     def on_button_press(self, e):
+        self.rect = None
         # save mouse drag start position
         self.start_x = self.w.canvasx(e.x)
         self.start_y = self.w.canvasy(e.y)
-
+        # decide color
+        if not self.area:
+            color = 'red'
+        elif self.area == 'Obstacle':
+            color = '#808080'
+        elif self.area == 'Sea':
+            color = 'blue'
+        elif self.area == 'Swamp':
+            color = '#808000'
+        else:
+            color = 'white'
         # create rectangle if not yet exist
         if not self.rect:
-            self.rect = self.w.create_rectangle(0, 0, 1, 1, outline='red')
+            self.rect = self.w.create_rectangle(0, 0, 1, 1, fill=color)
         return
 
     def on_move_press(self, e):
-        curX = self.w.canvasx(e.x)
-        curY = self.w.canvasy(e.y)
+        self.curX = self.w.canvasx(e.x)
+        self.curY = self.w.canvasy(e.y)
 
         # expand rectangle as you drag the mouse
-        self.w.coords(self.rect, self.start_x, self.start_y, curX, curY)
+        self.w.coords(self.rect, int(self.start_x), int(self.start_y), int(self.curX), int(self.curY))
         return
 
     def on_button_release(self, e):
+        # check button
+        if not self.area:
+            tkMessageBox.showwarning('Input Error', 'Please select an area type first!')
+            self.w.delete(self.rect)
+            self.rect = None
+            return
+        # draw into world
+        rectangle = Rectangle(int(self.start_x), int(self.start_y), int(self.curX), int(self.curY))
+        self.world.rectangles.append(rectangle)
+        self.world.update_map(rectangle, self.area)
+        self.area = None
+        # enable buttons
+        self.obstacle_button['state'] = 'normal'
+        self.sea_button['state'] = 'normal'
+        self.swamp_button['state'] = 'normal'
         pass
+
+    def area_obstacle(self):
+        self.area = 'Obstacle'
+        self.obstacle_button['state'] = 'disabled'
+        self.sea_button['state'] = 'disabled'
+        self.swamp_button['state'] = 'disabled'
+        return
+
+    def area_sea(self):
+        self.area = 'Sea'
+        self.obstacle_button['state'] = 'disabled'
+        self.sea_button['state'] = 'disabled'
+        self.swamp_button['state'] = 'disabled'
+        return
+
+    def area_swamp(self):
+        self.area = 'Swamp'
+        self.obstacle_button['state'] = 'disabled'
+        self.sea_button['state'] = 'disabled'
+        self.swamp_button['state'] = 'disabled'
+        return
 
 
 class AddShape(Frame):
