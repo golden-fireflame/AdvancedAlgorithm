@@ -18,7 +18,24 @@ class World:
     def update_map(self, shape, area):
         # function called to update map, area->text
         # shape = Shape(), area = 'Obstacle'
+        if area == 'Obstacle':
+            area = 1
+        elif area == 'Sea':
+            area = 2
+        elif area == 'Swamp':
+            area = 3
 
+        if isinstance(shape, Rectangle):
+            for i in range(shape.x, shape.x2+1):  # +1 needed
+                for j in range(shape.y, shape.y2+1):
+                    self.map[i, j] = area
+        elif isinstance(shape, Circle):
+            center = (shape.x_center, shape.y_center)
+            radius = shape.radius
+            for i in range(shape.x, shape.x2+1):
+                for j in range(shape.y, shape.y2+1):
+                    if sqrt((i - center[0]) ** 2 + (j - center[1]) ** 2) <= radius:  # check if in the circle
+                        self.map[i, j] = area
         return
 
     def add_shape(self, shape):
@@ -34,19 +51,22 @@ class World:
             #print("point added")
 
     def add_start(self, start):
-        self.start = Point(start[0], start[1],"start") # those strings are used to distinguish start and end points with different colours
+        self.start = Point(start[0], start[1], "start")  # those strings are used to distinguish start and end points with different colours
 
     def add_goal(self, goal):
-        self.goal = Point(goal[0], goal[1],"end")
+        self.goal = Point(goal[0], goal[1], "end")
 
     def is_allowed(self, x, y):
-        for circle in self.circles:
-            if circle.is_within(x, y):
-                return False
-        for rectangle in self.rectangles:
-            if rectangle.is_within(x, y):
-                return False
-        return True
+        """old method"""
+        # for circle in self.circles:
+        #     if circle.is_within(x, y):
+        #         return False
+        # for rectangle in self.rectangles:
+        #     if rectangle.is_within(x, y):
+        #         return False
+        # return True
+        """new method: use map"""
+        return self.map[x, y]
 
 
 class Shape:

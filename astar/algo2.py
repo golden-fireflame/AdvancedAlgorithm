@@ -3,8 +3,12 @@ from Queue import PriorityQueue
 from heapq import *
 from math import sqrt
 import time
-
 from ui.world import Point
+
+Accessible = 0
+Obstacle = 1
+Sea = 2
+Swamp = 3
 
 class MyPriorityQueue(PriorityQueue):
     def _put(self, item):
@@ -34,7 +38,13 @@ class Astar:
             x = node[0] + item[0]
             y = node[1] + item[1]
 
-            if self.map.world.is_allowed(x, y):
+            """old method"""
+            # if self.map.world.is_allowed(x, y):
+            #     if 0 < x < self.x and 0 < y < self.y:
+            #         neighbors.append((x, y))
+            """new method: check map"""
+            area = self.map.world.is_allowed(x, y)
+            if area == Accessible:
                 if 0 < x < self.x and 0 < y < self.y:
                     neighbors.append((x, y))
 

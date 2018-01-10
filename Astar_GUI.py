@@ -282,7 +282,11 @@ class AddShape(Frame):
         elif self.shape == 'Line':
             w.create_line(self.x1, self.y1, self.x2, self.y2, fill="red")
         elif self.shape == 'Circle':
-            w.create_oval(self.x1, self.y1, self.x2, self.y2, fill="green")
+            if self.x2-self.x1 == self.y2-self.y1:
+                w.create_oval(self.x1, self.y1, self.x2, self.y2, fill="green")
+            else:
+                tkMessageBox.showwarning('Input Error', 'Please value invalid! Must be a circle!')
+                return
         elif self.shape == 'Rectangle':
             w.create_rectangle(self.x1, self.y1, self.x2, self.y2, fill="blue")
         tkMessageBox.showinfo('Success', 'Shape added!')
