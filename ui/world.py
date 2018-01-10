@@ -26,15 +26,15 @@ class World:
             area = 3
 
         if isinstance(shape, Rectangle):
-            for i in range(shape.x, shape.x2+1):  # +1 needed
-                for j in range(shape.y, shape.y2+1):
+            for i in range(shape.x-1, shape.x2+1):  # +1 needed
+                for j in range(shape.y-1, shape.y2+1):
                     self.map[i, j] = area
         elif isinstance(shape, Circle):
             center = (shape.x_center, shape.y_center)
             radius = shape.radius
             for i in range(shape.x, shape.x2+1):
                 for j in range(shape.y, shape.y2+1):
-                    if sqrt((i - center[0]) ** 2 + (j - center[1]) ** 2) <= radius:  # check if in the circle
+                    if sqrt((i - center[0]) ** 2 + (j - center[1]) ** 2) <= radius+1:  # check if in the circle
                         self.map[i, j] = area
         return
 

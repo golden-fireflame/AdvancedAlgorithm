@@ -158,17 +158,17 @@ class Top(Frame):
         self.world.rectangles.append(rectangle)
         self.world.update_map(rectangle, 'Obstacle')
 
-        self.w.create_rectangle(100, 400, 550, 410, fill="red")
+        self.w.create_rectangle(100, 400, 550, 410, fill="#808000")
         rectangle = Rectangle(100, 400, 550, 410)
         self.world.rectangles.append(rectangle)
         self.world.update_map(rectangle, 'Obstacle')
 
-        self.w.create_rectangle(300, 300, 400, 310, fill="red")
+        self.w.create_rectangle(300, 300, 400, 310, fill="#808080")
         rectangle = Rectangle(300, 300, 400, 310)
         self.world.rectangles.append(rectangle)
         self.world.update_map(rectangle, 'Obstacle')
 
-        self.w.create_oval(420, 300, 470, 350, fill="green")
+        self.w.create_oval(420, 300, 470, 350, fill="red")
         circle = Circle(420, 300, 470, 350)
         self.world.circles.append(circle)
         self.world.update_map(circle, 'Obstacle')
@@ -180,6 +180,7 @@ class Top(Frame):
 
     def startAlgo(self):
         LOG.debug('Start Path Finding...')
+        self.execute_button['state'] = 'disabled'
         # put algorithm into a independent thread, so that can visualize the process
         t = Thread(target=self.Algo)
         t.start()
@@ -192,10 +193,12 @@ class Top(Frame):
         alg = Astar(self, 600, 600, start, goal)
         came_from, cost_so_far = alg.a_star()
         path = alg.build_path(goal, came_from, cost_so_far)
-
+        LOG.debug('Path Finding Finished! Printing final path...')
+        self.execute_button['state'] = 'normal'
         # to draw the final path
         for p in path:
             self.w.create_rectangle(p[0], p[1], p[0] + 1, p[1] + 1, fill='cyan')
+        LOG.debug('Complete!')
         return
 
     def visualize_process(self, node, flag):
@@ -257,6 +260,15 @@ class AddShape(Frame):
         self.frame = self.controller.get_frame('Top')
         w = self.frame.w
         try:
+            area = self.area.get()
+            if area == 'Obstacle':
+                color = '#808080'
+            elif area == 'Sea':
+                color = 'blue'
+            elif area == 'Swamp':
+                color = '#808000'
+            else:
+                color = 'white'
             if self.shape == 'sPoint' or self.shape == 'ePoint':
                 self.x1 = int(self.entry_x1.get())
                 self.y1 = int(self.entry_y1.get())
@@ -280,22 +292,22 @@ class AddShape(Frame):
             self.frame.e = w.create_oval(self.x1, self.y1, self.x1 + 10, self.y1 + 10, fill="magenta")
             self.frame.jerry = w.create_image(self.x1 + 15, self.y1 + 10, image=self.frame.jerrypic, anchor=NW)
         elif self.shape == 'Line':
-            w.create_line(self.x1, self.y1, self.x2, self.y2, fill="red")
+            w.create_line(self.x1, self.y1, self.x2, self.y2, fill=color)
         elif self.shape == 'Circle':
             if self.x2-self.x1 == self.y2-self.y1:
-                w.create_oval(self.x1, self.y1, self.x2, self.y2, fill="green")
+                w.create_oval(self.x1, self.y1, self.x2, self.y2, fill=color)
             else:
                 tkMessageBox.showwarning('Input Error', 'Please value invalid! Must be a circle!')
                 return
         elif self.shape == 'Rectangle':
-            w.create_rectangle(self.x1, self.y1, self.x2, self.y2, fill="blue")
+            w.create_rectangle(self.x1, self.y1, self.x2, self.y2, fill=color)
         tkMessageBox.showinfo('Success', 'Shape added!')
         self.controller.show_frame('Top')
         # sync map with world
-        self.add2world()
+        self.add2world(area)
         return
 
-    def add2world(self):
+    def add2world(self, area):
         # get world
         world = self.frame.world
         if self.shape == 'sPoint':
@@ -308,12 +320,10 @@ class AddShape(Frame):
             line = Line(self.x1, self.y1, self.x2, self.y2)
             world.lines.append(line)
         elif self.shape == 'Circle':
-            area = self.area.get()
             circle = Circle(self.x1-5, self.y1-5, self.x2, self.y2)
             world.circles.append(circle)
             world.update_map(circle, area)
         elif self.shape == 'Rectangle':
-            area = self.area.get()
             rectangle = Rectangle(self.x1, self.y1, self.x2, self.y2)
             world.rectangles.append(rectangle)
             world.update_map(rectangle, area)
