@@ -180,12 +180,12 @@ class Top(Frame):
         self.w.create_rectangle(150, 150, 300, 300, fill="blue")
         rectangle = Rectangle(150, 150, 300, 300)
         self.world.rectangles.append(rectangle)
-        self.world.update_map(rectangle, 'Obstacle')
+        self.world.update_map(rectangle, 'Sea')
 
         self.w.create_rectangle(100, 400, 550, 410, fill="#808000")
         rectangle = Rectangle(100, 400, 550, 410)
         self.world.rectangles.append(rectangle)
-        self.world.update_map(rectangle, 'Obstacle')
+        self.world.update_map(rectangle, 'Swamp')
 
         self.w.create_rectangle(300, 300, 400, 310, fill="#808080")
         rectangle = Rectangle(300, 300, 400, 310)

@@ -5,8 +5,8 @@ from math import sqrt
 import time
 from ui.world import Point
 
-Accessible = 0
-Obstacle = 1
+Accessible = 1
+Obstacle = 0
 Sea = 2
 Swamp = 3
 
@@ -44,9 +44,9 @@ class Astar:
             #         neighbors.append((x, y))
             """new method: check map"""
             area = self.map.world.is_allowed(x, y)
-            if area == Accessible:
+            if area is not Obstacle:
                 if 0 < x < self.x and 0 < y < self.y:
-                    neighbors.append((x, y))
+                    neighbors.append(((x, y), area))  # neighbor with area property
 
         return neighbors
 
@@ -96,19 +96,24 @@ class Astar:
                 break
 
             for neighbor in self.get_neighbors(current):
-                if neighbor in closed_set:
+                if neighbor[0] in closed_set:
                     continue
 
-                new_cost = cost_so_far[current] + self.get_distance(current, neighbor)
+                if neighbor[1] == Accessible:
+                    new_cost = cost_so_far[current] + self.get_distance(current, neighbor[0])
+                elif neighbor[1] == Sea:
+                    new_cost = cost_so_far[current] + self.get_distance(current, neighbor[0]) + 1
+                elif neighbor[1] == Swamp:
+                    new_cost = cost_so_far[current] + self.get_distance(current, neighbor[0]) + 3
 
-                if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
-                    cost_so_far[neighbor] = new_cost
-                    heuristic_cost = self.get_distance(self.goal, neighbor)
+                if neighbor[0] not in cost_so_far or new_cost < cost_so_far[neighbor[0]]:
+                    cost_so_far[neighbor[0]] = new_cost
+                    heuristic_cost = self.get_distance(self.goal, neighbor[0])
 
                     priority = new_cost + heuristic_cost
-                    open_set.put((priority, neighbor))
-                    open_set_copy.append(neighbor)
-                    came_from[neighbor] = current
+                    open_set.put((priority, neighbor[0]))
+                    open_set_copy.append(neighbor[0])
+                    came_from[neighbor[0]] = current
 
         return came_from, cost_so_far
 

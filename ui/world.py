@@ -9,17 +9,17 @@ class World:
         self.points = []
         self.start = None
         self.goal = None
-        # create map:   0->accessible(False)  1->blocked 2->sea 3->swamp(True)
+        # create map:   0->Obstacles(False)  1->accessible 2->sea 3->swamp(True)
         self.map = {}
         for i in range(600):
             for j in range(600):
-                self.map[(i, j)] = 0  # all coordinates set 0
+                self.map[(i, j)] = 1  # all coordinates set 1
 
     def update_map(self, shape, area):
         # function called to update map, area->text
         # shape = Shape(), area = 'Obstacle'
         if area == 'Obstacle':
-            area = 1
+            area = 0
         elif area == 'Sea':
             area = 2
         elif area == 'Swamp':
