@@ -101,12 +101,14 @@ class Top(Frame):
         self.sea_button = Button(self.config_frame, text='Sea', command=self.area_sea)
         self.swamp_button = Button(self.config_frame, text='Swamp', command=self.area_swamp)
         self.cancel_button = Button(self.config_frame, text='Cancel', command=self.area_cancel)
+        self.shape_button = Button(self.config_frame, text='Circle', command=self.shape_selection)
 
         self.area_label.grid(row=0, column=4)
         self.obstacle_button.grid(row=1, column=4, sticky=NSEW)
         self.sea_button.grid(row=1, column=5, sticky=NSEW)
         self.swamp_button.grid(row=1, column=6, sticky=NSEW)
         self.cancel_button.grid(row=0, column=5, sticky=NSEW)
+        self.shape_button.grid(row=0, column=6, sticky=NSEW)
         self.cancel_button['state'] = 'disabled'
 
         # canvas
@@ -117,12 +119,14 @@ class Top(Frame):
         # bind key to start algo
         self.execute_button.bind('<Return>', self.startAlgo)
         # bind key for create rectangle
+        self.drawshape = 'rect'
         self.area = None
         self.rect = None
         self.start_x = None
         self.start_y = None
         self.curX = None
         self.curY = None
+        self.varX, self.varY = None, None
         self.w.bind("<ButtonPress-1>", self.on_button_press)
         self.w.bind("<B1-Motion>", self.on_move_press)
         self.w.bind("<ButtonRelease-1>", self.on_button_release)
@@ -200,6 +204,22 @@ class Top(Frame):
 
     def clearMap(self):
         self.w.delete(ALL)
+        self.world.init_map()
+        # init start & end point
+        self.bg = ImageTk.PhotoImage(file="1.png")
+        self.w.create_image(0, 0, image=self.bg, anchor=NW)
+        image = Image.open('4.png')
+        self.tompic = ImageTk.PhotoImage(image)
+        self.tom = self.w.create_image(500 - 40, 100 - 70, image=self.tompic, anchor=NW)
+        image2 = Image.open('3.png')
+        self.jerrypic = ImageTk.PhotoImage(image2)
+        self.jerry = self.w.create_image(100 + 15, 500 + 10, image=self.jerrypic, anchor=NW)
+        self.s = self.w.create_oval(500 - 5, 100 - 5, 510, 110, fill="black")
+        sPoint = Point(500, 100, 'start')
+        self.world.start = sPoint
+        self.e = self.w.create_oval(100 - 5, 500 - 5, 110, 510, fill="magenta")
+        ePoint = Point(100, 500, 'end')
+        self.world.goal = ePoint
         return
 
     def startAlgo(self):
@@ -250,7 +270,10 @@ class Top(Frame):
             color = 'white'
         # create rectangle if not yet exist
         if not self.rect:
-            self.rect = self.w.create_rectangle(0, 0, 1, 1, fill=color)
+            if self.drawshape == 'rect':
+                self.rect = self.w.create_rectangle(0, 0, 1, 1, fill=color)
+            elif self.drawshape == 'circle':
+                self.rect = self.w.create_oval(0, 0, 1, 1, fill=color)
         return
 
     def on_move_press(self, e):
@@ -258,7 +281,12 @@ class Top(Frame):
         self.curY = self.w.canvasy(e.y)
 
         # expand rectangle as you drag the mouse
-        self.w.coords(self.rect, int(self.start_x), int(self.start_y), int(self.curX), int(self.curY))
+        if self.drawshape == 'rect':
+            self.w.coords(self.rect, int(self.start_x), int(self.start_y), int(self.curX), int(self.curY))
+        elif self.drawshape == 'circle':
+            self.varX = abs(self.curX - self.start_x)
+            self.varY = abs(self.curY - self.start_y)
+            self.w.coords(self.rect, int(self.start_x), int(self.start_y), int(self.start_x + self.varX), int(self.start_y + self.varX))
         return
 
     def on_button_release(self, e):
@@ -269,11 +297,17 @@ class Top(Frame):
             self.rect = None
             return
         # draw into world
-        rectangle = Rectangle(int(self.start_x), int(self.start_y), int(self.curX), int(self.curY))
-        self.world.rectangles.append(rectangle)
-        self.world.update_map(rectangle, self.area)
+        if self.drawshape == 'rect':
+            rectangle = Rectangle(int(self.start_x), int(self.start_y), int(self.curX), int(self.curY))
+            self.world.rectangles.append(rectangle)
+            self.world.update_map(rectangle, self.area)
+        elif self.drawshape == 'circle':
+            circle = Circle(int(self.start_x), int(self.start_y), int(self.start_x + self.varX), int(self.start_y + self.varX))
+            self.world.circles.append(circle)
+            self.world.update_map(circle, self.area)
         self.area = None
         # enable buttons
+        self.cancel_button['state'] = 'disabled'
         self.obstacle_button['state'] = 'normal'
         self.sea_button['state'] = 'normal'
         self.swamp_button['state'] = 'normal'
@@ -310,6 +344,15 @@ class Top(Frame):
         self.obstacle_button['state'] = 'normal'
         self.sea_button['state'] = 'normal'
         self.swamp_button['state'] = 'normal'
+        return
+
+    def shape_selection(self):
+        if self.drawshape == 'rect':
+            self.shape_button['text'] = 'Rect'
+            self.drawshape = 'circle'
+        else:
+            self.shape_button['text'] = 'Circle'
+            self.drawshape = 'rect'
         return
 
 

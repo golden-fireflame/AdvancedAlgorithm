@@ -9,10 +9,18 @@ class World:
         self.points = []
         self.start = None
         self.goal = None
-        # create map:   0->Obstacles(False)  1->accessible 2->sea 3->swamp(True)
+        # create map:
         self.map = {}
-        for i in range(600):
-            for j in range(600):
+        self.init_map()
+
+    def init_map(self):
+        self.rectangles = []
+        self.lines = []
+        self.circles = []
+        self.points = []
+        # 0->Obstacles(False)  1->accessible 2->sea 3->swamp(True)
+        for i in range(601):
+            for j in range(601):
                 self.map[(i, j)] = 1  # all coordinates set 1
 
     def update_map(self, shape, area):
