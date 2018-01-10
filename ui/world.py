@@ -38,6 +38,11 @@ class World:
                 return False
         return True
 
+    def restrict_area(self):
+        """calculate the obstacle area for algo use"""
+        restrict_area = []
+        return restrict_area
+
 
 class Shape:
 

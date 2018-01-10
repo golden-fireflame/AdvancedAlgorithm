@@ -24,15 +24,16 @@ class Astar:
         self.y = y
         self.start = start
         self.goal = goal
-
+        self.restrict_area = self.map.world.restrict_area()  # to speed up the algorithm, calculate restrict area first
+                                                             # function not completed yet
+                                                             # change neighbor to use this area
 
     def get_neighbors(self, node):
-        coords2 = [(0, 1), (0, -1), (1, 0), (-1, 0),
+        coords = [(0, 1), (0, -1), (1, 0), (-1, 0),
                   (-1, -1), (1, 1), (-1, 1), (1, -1)]
-        #coords2 = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         neighbors = []
 
-        for item in coords2:
+        for item in coords:
             x = node[0] + item[0]
             y = node[1] + item[1]
 
@@ -41,7 +42,6 @@ class Astar:
                     neighbors.append((x, y))
 
         return neighbors
-
 
     def get_distance(self, from_node, to_node):
         return sqrt((from_node[0] - to_node[0]) ** 2 + (from_node[1] - to_node[1]) ** 2)
@@ -55,7 +55,6 @@ class Astar:
             current = came_from[current]
 
         return path
-
 
     def a_star(self):
         closed_set = set()
@@ -77,10 +76,10 @@ class Astar:
 
             i += 1
             #later refcator this to some drawing method
-            if i % 50000 == 0:
+            if i % 5000 == 0:
                 """uncomment if want to plot both sets"""
-                for node in open_set_copy:
-                    self.map.visualize_process(node, 'open')
+                # for node in open_set_copy:
+                #     self.map.visualize_process(node, 'open')
                 for node in closed_set_copy:
                     self.map.visualize_process(node, 'closed')
                 closed_set_copy = []

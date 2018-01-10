@@ -73,7 +73,7 @@ class Top(Frame):
         self.s = None
         self.e = None
         # head label
-        label = Label(self.title_frame, text='A Star Path Finding Algorithm', font=controller.title_font)
+        label = Label(self.title_frame, text='Run!Jerry Run!', font=controller.title_font)
         label.pack(fill='x')
 
         # config panel
