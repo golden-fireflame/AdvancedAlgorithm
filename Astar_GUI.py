@@ -100,11 +100,14 @@ class Top(Frame):
         self.obstacle_button = Button(self.config_frame, text='Obstacle', command=self.area_obstacle)
         self.sea_button = Button(self.config_frame, text='Sea', command=self.area_sea)
         self.swamp_button = Button(self.config_frame, text='Swamp', command=self.area_swamp)
+        self.cancel_button = Button(self.config_frame, text='Cancel', command=self.area_cancel)
 
         self.area_label.grid(row=0, column=4)
         self.obstacle_button.grid(row=1, column=4, sticky=NSEW)
         self.sea_button.grid(row=1, column=5, sticky=NSEW)
         self.swamp_button.grid(row=1, column=6, sticky=NSEW)
+        self.cancel_button.grid(row=0, column=5, sticky=NSEW)
+        self.cancel_button['state'] = 'disabled'
 
         # canvas
         self.w = Canvas(self.map_frame, width=600, height=600, bg='white', bd=0, highlightthickness=0, relief='ridge')
@@ -278,6 +281,7 @@ class Top(Frame):
 
     def area_obstacle(self):
         self.area = 'Obstacle'
+        self.cancel_button['state'] = 'normal'
         self.obstacle_button['state'] = 'disabled'
         self.sea_button['state'] = 'disabled'
         self.swamp_button['state'] = 'disabled'
@@ -285,6 +289,7 @@ class Top(Frame):
 
     def area_sea(self):
         self.area = 'Sea'
+        self.cancel_button['state'] = 'normal'
         self.obstacle_button['state'] = 'disabled'
         self.sea_button['state'] = 'disabled'
         self.swamp_button['state'] = 'disabled'
@@ -292,9 +297,19 @@ class Top(Frame):
 
     def area_swamp(self):
         self.area = 'Swamp'
+        self.cancel_button['state'] = 'normal'
         self.obstacle_button['state'] = 'disabled'
         self.sea_button['state'] = 'disabled'
         self.swamp_button['state'] = 'disabled'
+        return
+
+    def area_cancel(self):
+        self.area = None
+        self.cancel_button['state'] = 'disabled'
+        # enable buttons
+        self.obstacle_button['state'] = 'normal'
+        self.sea_button['state'] = 'normal'
+        self.swamp_button['state'] = 'normal'
         return
 
 
