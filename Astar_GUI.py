@@ -140,7 +140,8 @@ class Top(Frame):
         image = Image.open('4.png')
         self.tompic = ImageTk.PhotoImage(image)
         self.tom = self.w.create_image(500-40, 100-70, image=self.tompic, anchor=NW)
-        self.jerrypic = ImageTk.PhotoImage(file="3.png")
+        image2 = Image.open('3.png')
+        self.jerrypic = ImageTk.PhotoImage(image2)
         self.jerry = self.w.create_image(100 + 15, 500 + 10, image=self.jerrypic, anchor=NW)
 
         # demo
@@ -259,10 +260,14 @@ class AddShape(Frame):
 
         if self.shape == 'sPoint':
             w.delete(self.frame.s)
+            w.delete(self.frame.tom)
             self.frame.s = w.create_oval(self.x1, self.y1, self.x1+10, self.y1+10, fill="black")
+            self.frame.tom = w.create_image(self.x1 - 40, self.y1 - 70, image=self.frame.tompic, anchor=NW)
         elif self.shape == 'ePoint':
             w.delete(self.frame.e)
+            w.delete(self.frame.jerry)
             self.frame.e = w.create_oval(self.x1, self.y1, self.x1 + 10, self.y1 + 10, fill="magenta")
+            self.frame.jerry = w.create_image(self.x1 + 15, self.y1 + 10, image=self.frame.jerrypic, anchor=NW)
         elif self.shape == 'Line':
             w.create_line(self.x1, self.y1, self.x2, self.y2, fill="red")
         elif self.shape == 'Circle':
