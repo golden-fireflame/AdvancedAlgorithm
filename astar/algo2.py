@@ -24,9 +24,6 @@ class Astar:
         self.y = y
         self.start = start
         self.goal = goal
-        self.restrict_area = self.map.world.restrict_area()  # to speed up the algorithm, calculate restrict area first
-                                                             # function not completed yet
-                                                             # change neighbor to use this area
 
     def get_neighbors(self, node):
         coords = [(0, 1), (0, -1), (1, 0), (-1, 0),

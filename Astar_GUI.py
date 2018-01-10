@@ -73,7 +73,7 @@ class Top(Frame):
         self.s = None
         self.e = None
         # head label
-        label = Label(self.title_frame, text='Run!Jerry Run!', font=controller.title_font)
+        label = Label(self.title_frame, text='Run! Jerry Run!', font=controller.title_font)
         label.pack(fill='x')
 
         # config panel
@@ -235,12 +235,19 @@ class AddShape(Frame):
         self.entry_y1.grid(row=1, column=1)
         self.entry_x2.grid(row=2, column=1)
         self.entry_y2.grid(row=3, column=1)
+        # Selection
+        self.area_label = Label(self, text='Type')
+        self.area_label.grid(row=4, column=0)
+        self.area = StringVar()
+        self.area.set('Obstacle')
+        self.area_option = OptionMenu(self, self.area, 'Obstacle', 'Sea', 'Swamp')
+        self.area_option.grid(row=4, column=1, sticky=NSEW)
         # Buttons
         self.submit_button = Button(self, text='Submit', command=self.drawshape)
         self.back_button = Button(self, text='Back', command=self.goBack)
 
-        self.submit_button.grid(row=4, column=0)
-        self.back_button.grid(row=4, column=1)
+        self.submit_button.grid(row=5, column=0)
+        self.back_button.grid(row=5, column=1)
 
     def drawshape(self, e=None):
         self.frame = self.controller.get_frame('Top')

@@ -1,15 +1,19 @@
 from math import sqrt
 
 class World:
-    rectangles = []
-    lines = []
-    circles = []
-    points = []
-    start = None
-    goal = None
-
     def __init__(self):
-        pass
+        self.rectangles = []
+        self.lines = []
+        self.circles = []
+        self.points = []
+        self.start = None
+        self.goal = None
+        # create map   0->blocked 1->sea 2->swamp
+        # all coordinates set 0
+
+    def update_map(self, shape, type):
+        # function called to update map
+        return
 
     def add_shape(self, shape):
         if isinstance(shape, Rectangle):
@@ -18,7 +22,7 @@ class World:
         elif isinstance(shape, Line):
             self.lines.append(shape)
         elif isinstance(shape, Circle): 
-             self.circles.append(shape)
+            self.circles.append(shape)
         elif isinstance(shape, Point):
             self.points.append(shape)
             #print("point added")
@@ -38,27 +42,22 @@ class World:
                 return False
         return True
 
-    def restrict_area(self):
-        """calculate the obstacle area for algo use"""
-        restrict_area = []
-        return restrict_area
-
 
 class Shape:
-
     def __init__(self):
         pass
 
-    def draw(self):
+    def draw(self, w):
         pass
 
     @staticmethod
     def distance(x1, x2, y1, y2):
         return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-class Point(Shape):
 
+class Point(Shape):
     def __init__(self, x, y,start_or_end):
+        Shape.__init__(self)
         self.x = x
         self.y = y
         self.start_or_end=start_or_end
@@ -71,8 +70,8 @@ class Point(Shape):
 
 
 class Line(Shape):
-
     def __init__(self, x, y, x2, y2):
+        Shape.__init__(self)
         self.x = x
         self.y = y
         self.x2 = x2
@@ -90,8 +89,8 @@ class Line(Shape):
 
 
 class Circle(Shape):
-
     def __init__(self, x, y, x2, y2):
+        Shape.__init__(self)
         self.x = x
         self.y = y
         self.x2 = x2
@@ -107,9 +106,10 @@ class Circle(Shape):
     def is_within(self, x_point, y_point):
         return self.distance(x_point,  self.x_center,y_point, self.y_center) <= self.radius
 
-class Rectangle(Shape):
 
+class Rectangle(Shape):
     def __init__(self, x, y, x2, y2):
+        Shape.__init__(self)
         self.x = x
         self.y = y
         self.x2 = x2
