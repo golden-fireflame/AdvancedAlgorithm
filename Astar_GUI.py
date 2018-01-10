@@ -102,6 +102,13 @@ class Top(Frame):
 
         # bind key to start algo
         self.execute_button.bind('<Return>', self.startAlgo)
+        # bind key for create rectangle
+        self.rect = None
+        self.start_x = None
+        self.start_y = None
+        self.w.bind("<ButtonPress-1>", self.on_button_press)
+        self.w.bind("<B1-Motion>", self.on_move_press)
+        self.w.bind("<ButtonRelease-1>", self.on_button_release)
 
     def setStartPoint(self):
         frame = self.controller.get_frame('AddShape')
@@ -207,6 +214,27 @@ class Top(Frame):
             self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='cyan', outline='cyan')
         else:
             self.w.create_oval(node[0], node[1], node[0] + 1, node[1] + 1, fill='yellow', outline='yellow')
+
+    def on_button_press(self, e):
+        # save mouse drag start position
+        self.start_x = self.w.canvasx(e.x)
+        self.start_y = self.w.canvasy(e.y)
+
+        # create rectangle if not yet exist
+        if not self.rect:
+            self.rect = self.w.create_rectangle(0, 0, 1, 1, outline='red')
+        return
+
+    def on_move_press(self, e):
+        curX = self.w.canvasx(e.x)
+        curY = self.w.canvasy(e.y)
+
+        # expand rectangle as you drag the mouse
+        self.w.coords(self.rect, self.start_x, self.start_y, curX, curY)
+        return
+
+    def on_button_release(self, e):
+        pass
 
 
 class AddShape(Frame):
