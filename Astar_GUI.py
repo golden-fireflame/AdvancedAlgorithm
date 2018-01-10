@@ -3,15 +3,13 @@ import tkMessageBox
 import tkFont as tkfont
 import ttk
 import logging
-import uuid
-import threading
-import time
-from time import sleep
 from ui.world import World
 from ui.world import Shape, Point, Line, Circle, Rectangle
 #from astar.algorithm import Astar
 from astar.algo2 import Astar
 from threading import Thread
+from PIL import ImageTk
+from PIL import Image
 
 
 FORMAT = '%(asctime)-15s %(levelname)s %(message)s'
@@ -65,11 +63,11 @@ class Top(Frame):
 
         # create Frames
         self.title_frame = Frame(self)
-        self.title_frame.grid(row=0, column=0, columnspan=2)
+        self.title_frame.grid(row=0, column=0)
         self.config_frame = Frame(self)
-        self.config_frame.grid(row=1, column=0)
+        self.config_frame.grid(row=2, column=0)
         self.map_frame = Frame(self)
-        self.map_frame.grid(row=1, column=1)
+        self.map_frame.grid(row=1, column=0)
         # some variables if needed
         self.world = World()
         self.s = None
@@ -88,17 +86,17 @@ class Top(Frame):
         self.addRect_button = Button(self.config_frame, text='Add Rectangle', command=self.addRect)
         self.addCircle_button = Button(self.config_frame, text='Add Circle', command=self.addCircle)
 
-        self.execute_button.grid(row=0, column=0, columnspan=2, sticky=NSEW)
-        self.clear_button.grid(row=1, column=0, sticky=NSEW)
+        self.execute_button.grid(row=0, column=0, rowspan=2, sticky=NS)
+        self.clear_button.grid(row=0, column=1, sticky=NSEW)
         self.init_button.grid(row=1, column=1, sticky=NSEW)
-        self.setStart_button.grid(row=2, column=0)
-        self.setEnd_button.grid(row=2, column=1)
-        self.addLine_button.grid(row=3, column=0, columnspan=2, sticky=NSEW)
-        self.addRect_button.grid(row=4, column=0, columnspan=2, sticky=NSEW)
-        self.addCircle_button.grid(row=5, column=0, columnspan=2, sticky=NSEW)
+        self.setStart_button.grid(row=0, column=2, sticky=NSEW)
+        self.setEnd_button.grid(row=1, column=2, sticky=NSEW)
+        #self.addLine_button.grid(row=3, column=0, columnspan=2, sticky=NSEW)
+        self.addRect_button.grid(row=0, column=3, sticky=NSEW)
+        self.addCircle_button.grid(row=1, column=3, sticky=NSEW)
 
         # canvas
-        self.w = Canvas(self.map_frame, width=1000, height=1000, bg='white', bd=0, highlightthickness=0, relief='ridge')
+        self.w = Canvas(self.map_frame, width=600, height=600, bg='white', bd=0, highlightthickness=0, relief='ridge')
         self.w.pack()
         self.initMap()
 
@@ -136,33 +134,38 @@ class Top(Frame):
         return
 
     def initMap(self):
+        # add Tom & Jerry
+        self.bg = ImageTk.PhotoImage(file="1.png")
+        self.w.create_image(0, 0, image=self.bg, anchor=NW)
+        image = Image.open('4.png')
+        self.tompic = ImageTk.PhotoImage(image)
+        self.tom = self.w.create_image(500-40, 100-70, image=self.tompic, anchor=NW)
+        self.jerrypic = ImageTk.PhotoImage(file="3.png")
+        self.jerry = self.w.create_image(100 + 15, 500 + 10, image=self.jerrypic, anchor=NW)
+
         # demo
-        self.s = self.w.create_oval(750-5, 200-5, 760, 210, fill="black")
-        sPoint = Point(750, 200, 'start')
+        self.s = self.w.create_oval(500-5, 100-5, 510, 110, fill="black")
+        sPoint = Point(500, 100, 'start')
         self.world.start = sPoint
 
-        self.e = self.w.create_oval(200-5, 750-5, 210, 760, fill="magenta")
-        ePoint = Point(200, 750, 'end')
+        self.e = self.w.create_oval(100-5, 500-5, 110, 510, fill="magenta")
+        ePoint = Point(100, 500, 'end')
         self.world.goal = ePoint
 
-        self.w.create_rectangle(200, 200, 400, 400, fill="blue")
-        rectangle = Rectangle(200, 200, 400, 400)
+        self.w.create_rectangle(150, 150, 300, 300, fill="blue")
+        rectangle = Rectangle(150, 150, 300, 300)
         self.world.rectangles.append(rectangle)
 
-        self.w.create_rectangle(150, 600, 750, 610, fill="red")
-        rectangle = Rectangle(150, 600, 750, 610)
+        self.w.create_rectangle(100, 400, 550, 410, fill="red")
+        rectangle = Rectangle(100, 400, 550, 410)
         self.world.rectangles.append(rectangle)
 
-        self.w.create_rectangle(400, 400, 700, 410, fill="red")
-        rectangle = Rectangle(400, 400, 700, 410)
+        self.w.create_rectangle(300, 300, 400, 310, fill="red")
+        rectangle = Rectangle(300, 300, 400, 310)
         self.world.rectangles.append(rectangle)
 
-        #self.w.create_rectangle(300, 420, 700, 440, fill="red")
-        #rectangle = Rectangle(300, 420, 700, 440)
-        #self.world.rectangles.append(rectangle)
-
-        self.w.create_oval(720, 400, 770, 450, fill="green")
-        circle = Circle(720, 400, 770, 450)
+        self.w.create_oval(420, 300, 470, 350, fill="green")
+        circle = Circle(420, 300, 470, 350)
         self.world.circles.append(circle)
         return
 
@@ -181,7 +184,7 @@ class Top(Frame):
         start = (self.world.start.x, self.world.start.y)
         goal = (self.world.goal.x, self.world.goal.y)
 
-        alg = Astar(self, 1000, 1000, start, goal)
+        alg = Astar(self, 600, 600, start, goal)
         came_from, cost_so_far = alg.a_star()
         path = alg.build_path(goal, came_from, cost_so_far)
 

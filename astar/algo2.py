@@ -75,7 +75,7 @@ class Astar:
 
             i += 1
             #later refcator this to some drawing method
-            if i % 5000 == 0:
+            if i % 50000 == 0:
                 """uncomment if want to plot both sets"""
                 # for node in open_set.queue:
                 #     self.map.visualize_process(node[1], 'open')
