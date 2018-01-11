@@ -200,6 +200,7 @@ class Top(Frame):
         circle = Circle(420, 300, 470, 350)
         self.world.circles.append(circle)
         self.world.update_map(circle, 'Obstacle')
+        LOG.debug('[*]Map initialized.')
         return
 
     def clearMap(self):
@@ -220,10 +221,11 @@ class Top(Frame):
         self.e = self.w.create_oval(100 - 5, 500 - 5, 110, 510, fill="magenta")
         ePoint = Point(100, 500, 'end')
         self.world.goal = ePoint
+        LOG.debug('[*]Map cleared.')
         return
 
     def startAlgo(self):
-        LOG.debug('Start Path Finding...')
+        LOG.debug('[*]Start Path Finding...')
         self.execute_button['state'] = 'disabled'
         # put algorithm into a independent thread, so that can visualize the process
         t = Thread(target=self.Algo)
@@ -237,12 +239,12 @@ class Top(Frame):
         alg = Astar(self, 600, 600, start, goal)
         came_from, cost_so_far = alg.a_star()
         path = alg.build_path(goal, came_from, cost_so_far)
-        LOG.debug('Path Finding Finished! Printing final path...')
+        LOG.debug('[*]Path Finding Finished! Printing final path...')
         self.execute_button['state'] = 'normal'
         # to draw the final path
         for p in path:
             self.w.create_rectangle(p[0], p[1], p[0] + 1, p[1] + 1, fill='cyan')
-        LOG.debug('Complete!')
+        LOG.debug('[*]Complete!')
         return
 
     def visualize_process(self, node, flag):
@@ -279,7 +281,15 @@ class Top(Frame):
     def on_move_press(self, e):
         self.curX = self.w.canvasx(e.x)
         self.curY = self.w.canvasy(e.y)
-
+        # make sure xy coordinates in the right range
+        if self.curX < 0:
+            self.curX = 0
+        elif self.curX > 600:
+            self.curX = 600
+        if self.curY < 0:
+            self.curY = 0
+        elif self.curY > 600:
+            self.curY = 600
         # expand rectangle as you drag the mouse
         if self.drawshape == 'rect':
             self.w.coords(self.rect, int(self.start_x), int(self.start_y), int(self.curX), int(self.curY))
@@ -297,7 +307,7 @@ class Top(Frame):
             self.rect = None
             return
 
-        print(self.area)
+        LOG.debug('[*]Area: %s added.' % self.area)
 
         # draw into world
         if self.drawshape == 'rect':
@@ -353,9 +363,11 @@ class Top(Frame):
         if self.drawshape == 'rect':
             self.shape_button['text'] = 'Rect'
             self.drawshape = 'circle'
+            LOG.debug('[*]Drawing shape change to CIRCLE.')
         else:
             self.shape_button['text'] = 'Circle'
             self.drawshape = 'rect'
+            LOG.debug('[*]Drawing shape change to RECTANGLE.')
         return
 
 

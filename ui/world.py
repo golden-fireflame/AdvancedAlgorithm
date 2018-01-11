@@ -34,9 +34,22 @@ class World:
             area = 3
 
         if isinstance(shape, Rectangle):
-            for i in range(shape.x-1, shape.x2+1):  # +1 needed
-                for j in range(shape.y-1, shape.y2+1):
-                    self.map[i, j] = area
+            if shape.x < shape.x2 and shape.y < shape.y2:
+                for i in range(shape.x-1, shape.x2+1):  # +1 needed
+                    for j in range(shape.y-1, shape.y2+1):
+                        self.map[i, j] = area
+            elif shape.x > shape.x2 and shape.y > shape.y2:
+                for i in range(shape.x2-1, shape.x+1):
+                    for j in range(shape.y2-1, shape.y+1):
+                        self.map[i, j] = area
+            elif shape.x < shape.x2 and shape.y > shape.y2:
+                for i in range(shape.x-1, shape.x2+1):
+                    for j in range(shape.y2-1, shape.y+1):
+                        self.map[i, j] = area
+            elif shape.x > shape.x2 and shape.y < shape.y2:
+                for i in range(shape.x2-1, shape.x+1):
+                    for j in range(shape.y-1, shape.y2+1):
+                        self.map[i, j] = area
         elif isinstance(shape, Circle):
             center = (shape.x_center, shape.y_center)
             radius = shape.radius

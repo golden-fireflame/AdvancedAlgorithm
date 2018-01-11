@@ -2,14 +2,14 @@ import heapq
 from Queue import PriorityQueue
 from heapq import *
 from math import sqrt
-import time
-from ui.world import Point
+import random
 
 Accessible = 1
 Obstacle = 0
 Sea = 2
 Swamp = 3
 SQRT2 = 2 ** 0.5
+
 
 class MyPriorityQueue(PriorityQueue):
     def _put(self, item):
@@ -31,8 +31,8 @@ class Astar:
         self.goal = goal
 
     def get_neighbors(self, node):
-        coords = [(0, 1), (0, -1), (1, 0), (-1, 0),
-                  (-1, -1), (1, 1), (-1, 1), (1, -1)]
+        coords = [(-1, -1), (1, 1), (-1, 1), (1, -1),
+                  (0, 1), (0, -1), (1, 0), (-1, 0)]
         neighbors = []
 
         for item in coords:
@@ -83,14 +83,17 @@ class Astar:
 
             i += 1
             # later refcator this to some drawing method
-            if i % 50000 == 0:
+            if i % 500 == 0:
                 """uncomment if want to plot both sets"""
+                rnd = random.randint(0, 10)
                 # for node in open_set_copy:
-                #     self.map.visualize_process(node, 'open')
-                for node in closed_set_copy:
-                    self.map.visualize_process(node, 'closed')
-                closed_set_copy = []
-                open_set_copy = []
+                #     if rnd < 1:
+                #         self.map.visualize_process(node, 'open')
+                # for node in closed_set_copy:
+                #     if rnd > 9:
+                #         self.map.visualize_process(node, 'closed')
+                # closed_set_copy = []
+                # open_set_copy = []
 
             if current == self.goal:
                 break
