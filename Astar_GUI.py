@@ -296,6 +296,9 @@ class Top(Frame):
             self.w.delete(self.rect)
             self.rect = None
             return
+
+        print(self.area)
+
         # draw into world
         if self.drawshape == 'rect':
             rectangle = Rectangle(int(self.start_x), int(self.start_y), int(self.curX), int(self.curY))

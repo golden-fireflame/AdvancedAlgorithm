@@ -9,6 +9,7 @@ Accessible = 1
 Obstacle = 0
 Sea = 2
 Swamp = 3
+SQRT2 = 2 ** 0.5
 
 class MyPriorityQueue(PriorityQueue):
     def _put(self, item):
@@ -66,24 +67,23 @@ class Astar:
     def a_star(self):
         closed_set = set()
         closed_set_copy = []  # for plotting process, only new nodes will be plotted to make it faster
-        open_set = PriorityQueue()
+        open_set = []
         open_set_copy = []  # for plotting process, the same as above
         came_from = {}
         cost_so_far = {}
 
-        open_set.put((0, self.start))
+        heappush(open_set, (0, self.start))
 
         came_from[self.start] = None
         cost_so_far[self.start] = 0
         i = 0
-        while not open_set.empty():
-            current = open_set.get()[1]
-            closed_set.add(current)
-            closed_set_copy.append(current)
+        while len(open_set) > 0:
+            current = heappop(open_set)  # pop first one, current=(priority, node)
+            current = current[1]  # current = node
 
             i += 1
-            #later refcator this to some drawing method
-            if i % 5000 == 0:
+            # later refcator this to some drawing method
+            if i % 50000 == 0:
                 """uncomment if want to plot both sets"""
                 # for node in open_set_copy:
                 #     self.map.visualize_process(node, 'open')
@@ -99,20 +99,35 @@ class Astar:
                 if neighbor[0] in closed_set:
                     continue
 
+                # distance between current & neighbor only 1 or sqrt2
+                if neighbor[0][0] - current[0] == 0 or neighbor[0][1] - current[1] == 0:
+                    step = 1
+                else:
+                    step = SQRT2
+
+                # check neighbor belongs to which area
                 if neighbor[1] == Accessible:
-                    new_cost = cost_so_far[current] + self.get_distance(current, neighbor[0])
+                    new_cost = cost_so_far[current] + step
                 elif neighbor[1] == Sea:
-                    new_cost = cost_so_far[current] + self.get_distance(current, neighbor[0]) + 1
+                    new_cost = cost_so_far[current] + step + 1
                 elif neighbor[1] == Swamp:
-                    new_cost = cost_so_far[current] + self.get_distance(current, neighbor[0]) + 3
+                    new_cost = cost_so_far[current] + step + 3
 
                 if neighbor[0] not in cost_so_far or new_cost < cost_so_far[neighbor[0]]:
                     cost_so_far[neighbor[0]] = new_cost
                     heuristic_cost = self.get_distance(self.goal, neighbor[0])
-
                     priority = new_cost + heuristic_cost
-                    open_set.put((priority, neighbor[0]))
-                    open_set_copy.append(neighbor[0])
+
+                    # check neighbor if in the openset first
+                    if neighbor[0] not in closed_set:
+                        heappush(open_set, (priority, neighbor[0]))
+                        closed_set.add(current)
+                        closed_set_copy.append(current)
+                    else:
+                        old = [v for i, v in enumerate(open_set) if v[1] == neighbor[0]]  # i->index v->tuple
+                        open_set.remove(old)
+                        heappush(open_set, (priority, neighbor[0]))
+                    open_set_copy.append(neighbor[0])  # add for plotting
                     came_from[neighbor[0]] = current
 
         return came_from, cost_so_far
