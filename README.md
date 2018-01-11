@@ -10,3 +10,7 @@ Advanced Algorithm Fall 2017 Course Team Project
 ### Run Code
 * go to root directory of repo
 * `python Astar_GUI.py`
+
+### Modification
+* `algo2.py`
+    + comment & uncomment related part to decide displaying searching area or not.
